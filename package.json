@@ -1,0 +1,29 @@
+{
+  "name": "claro-teste",
+  "version": "1.0.0",
+  "description": "NONE",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/123leo007/claro-brasil-challenge-backend-nodejs.git"
+  },
+  "keywords": [
+    "claro",
+    "teste"
+  ],
+  "author": "leonardo.ribeiro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/123leo007/claro-brasil-challenge-backend-nodejs/issues"
+  },
+  "homepage": "https://github.com/123leo007/claro-brasil-challenge-backend-nodejs#readme",
+  "dependencies": {
+    "browser-sync": "^2.26.5",
+    "express": "^4.16.4",
+    "gulp": "^4.0.2",
+    "gulp-nodemon": "^2.4.2"
+  }
+}
