@@ -4,6 +4,18 @@ var browserSync = require('browser-sync');
 
 var nodemon = require('gulp-nodemon');
 
+gulp.task('sync', function () {
+	sync.init({
+		open: false,
+		server: {
+			baseDir: '/',
+			middleware: [mockApis]
+		},
+		port: 3000,
+		notify: true,
+	});
+});
+
 gulp.task('nodemon', function (cb) {
     var started = false;
 
@@ -18,8 +30,12 @@ gulp.task('nodemon', function (cb) {
 });
 
 gulp.task('browser-sync', gulp.series( ['nodemon'], function() {
-browserSync.init(null, {
-       proxy: "http://localhost:8000",
+    var mockApis = require('./backend/listener.js');
+    browserSync.init(null, {
+        server: {
+			baseDir: '/',
+			middleware: [mockApis]
+		},
                 files: ["public/**/*.*"],
                 port: 3000,
        });

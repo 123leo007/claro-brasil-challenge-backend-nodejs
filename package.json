@@ -23,6 +23,8 @@
   "dependencies": {
     "browser-sync": "^2.26.5",
     "express": "^4.16.4",
+    "express-http-proxy": "^1.5.1",
+    "express-restful-api": "^14.1.4",
     "gulp": "^4.0.2",
     "gulp-nodemon": "^2.4.2"
   }
