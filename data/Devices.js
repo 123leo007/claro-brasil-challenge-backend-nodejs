@@ -1,13 +1,17 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var UserSchema = new Schema({
+var DeviceSchema = new Schema({
+    userId:String,
+    macAddress:{ type: String, unique: true },
     name:String,
-    email:String,
-    login:String,
-    password:String
+    model:{
+        type: String,
+        enum: ['iOS', 'Android']
+      },
+    registeredDate:{type:Date, default: Date.now}
 });
 
-var User = mongoose.model('user',UserSchema);
+var Devices = mongoose.model('devices',DeviceSchema);
 
-module.exports = User;
+module.exports = Devices;

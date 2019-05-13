@@ -30,11 +30,12 @@ gulp.task('nodemon', function (cb) {
 });
 
 gulp.task('browser-sync', gulp.series( ['nodemon'], function() {
-    var mockApis = require('./backend/listener.js');
+    //var mockApis = require('./backend/listener.js');
+    var Api = require('./backend/devicesApi.js');
     browserSync.init(null, {
         server: {
 			baseDir: '/',
-			middleware: [mockApis]
+			middleware: [Api]
 		},
                 files: ["public/**/*.*"],
                 port: 3000,
