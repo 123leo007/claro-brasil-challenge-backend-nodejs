@@ -8,7 +8,7 @@ gulp.task('sync', function () {
 	sync.init({
 		open: false,
 		server: {
-			baseDir: '/',
+			baseDir: './',
 			middleware: [mockApis]
 		},
 		port: 3000,
