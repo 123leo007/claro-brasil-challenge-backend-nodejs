@@ -44,10 +44,11 @@ router.post('/addDevice', function (req, res) {
         });
         var hasOne = undefined;
         Devices.find({ macAddress: MAC }, (err, res) => {
+            console.log(res[0]);
             hasOne = res[0] !== undefined;
-        }).then((data) => {
+        }).then(() => {
             console.log(hasOne);
-                if (hasOne) {
+                if (!hasOne) {
                     device.save().then(function () {
                         res.send(device, 201);
                     }).catch(function () {
@@ -67,9 +68,9 @@ router.post('/changeName', function (req, res) {
 
     Devices.findOneAndUpdate({ macAddress: MAC }, { name: name }, (error, doc) => {
         if (doc === null) {
-            res.send("object not found");
+            res.send("object not found",204);
         } else {
-            res.send(doc);
+            res.send(doc,202);
             doc.save();
         }
         // error: any errors that occurred
@@ -86,10 +87,10 @@ router.post('/removeDevice', function (req, res) {
     }).then(() => {
         if (data !== undefined) {
             Devices.deleteMany({ macAddress: MAC }, (err) => {
-                res.send("device Removed");
+                res.send("device Removed",202);
             });
         } else {
-            res.send("device not found");
+            res.send("device not found",204);
         }
     });
 });
