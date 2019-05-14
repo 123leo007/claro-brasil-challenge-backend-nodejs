@@ -5,6 +5,7 @@ var UserSchema = new Schema({
     name:String,
     email:String,
     login:{ type: String, unique: true },
+    lastChangeDeviceDate:{type:Date, default: Date.now},
     password:String
 });
 

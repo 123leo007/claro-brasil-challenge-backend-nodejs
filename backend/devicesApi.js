@@ -15,7 +15,6 @@ var body = {
     arrayOfMessage: []
 };
 
-//const moment = require('moment');
 mongo.Promise = global.Promise;
 
 mongo.connect(url + dbName);
@@ -51,15 +50,7 @@ function compareDates(date1, date2) {
 
     return diffDays;
 }
-/*
-1. Adicionar um dispositivo, informando:
-	- ID do usuário
-	- ID do dispositivo
-	- Nome do dispositivo
-	- Modelo do dispositivo (Android, iOS)
-2. Alterar o nome de um dispositivo através do ID
-3. Remover um dispositivo através do ID
-*/
+
 router.post('/addDevice', function (req, res) {
 
     var login = req.body.login;
@@ -89,7 +80,7 @@ router.post('/addDevice', function (req, res) {
                     const diffTime = Math.abs(e.getTime() - d.getTime());
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) - 1;*/
                     var canChange = false;
-                    const diffDays = compareDates(element.registeredDate, new Date());
+                    const diffDays = compareDates(docs[0].lastChangeDeviceDate, new Date());
                     if (diffDays >= 30) {
                         console.log(true);
                         canChange = true;
@@ -130,7 +121,6 @@ router.post('/addDevice', function (req, res) {
                 });
             }
         })
-
     })
 });
 
@@ -167,141 +157,70 @@ router.post('/changeDevice', function (req, res) {
     var model = req.body.model;
     var oldMAC = req.body.oldMAC;
 
-    Users.find({ login: login }, function (err, docs) {
-        var device = new Devices({
-            userId: docs[0].login,
-            macAddress: MAC,
-            name: name,
-            model: model
-        });
-        var hasOne = undefined;
-        var newOne = undefined;
-
-        Devices.find({ userId: login }, (err, res) => {
-            limitOver = res.length >= 3;
-
-        }).then((data) => {
-            if (limitOver) {
-                var lastMacAddress = '';
-                data.forEach(element => {
-                    var getError = undefined;
-                    if (element.macAddress === oldMAC) {
-                        const diffDays = compareDates(element.registeredDate, new Date());
-                        console.log(diffDays);
-                        var canChange = false;
-                        if (diffDays >= 30) {
-                            canChange = true;
-                            var body = getBody();
-                            Devices.findOneAndUpdate({ macAddress: oldMAC },
-                                { macAddress: MAC, name: name, model: model, registeredDate: new Date() },
-                                (err, doc) => {
-                                    getError = err;
-                                    if (doc !== undefined) {
-                                        body.arrayOfMessage[0] = 'SUCCESS';
-                                        body.result = doc;
-                                        res.status(202).send(body);
-                                        doc.save();
-                                    } else {
-                                        body.arrayOfMessage[0] = "new device already registered";
-                                        body.result = '';
-                                        res.status(202).send(body);
-                                    }
-                                }).catch();
-                        } else if (!canChange) {
-                            var body = getBody();
-                            body.arrayOfMessage[0] = "device limit reached, and you need to wait " + (30 - diffDays) + " to change one";
-                            body.result = '';
-
-                            res.status(202).send(body);
-                        }
-                    } else if (element.macAddress === data[data.length - 1].macAddress) {
-                        if (getError === undefined) {
-                            var body = getBody();
-                            body.arrayOfMessage[0] = "device not found";
-                            body.result = '';
-                            res.status(202).send(body);
-                        } else {
-                            body.arrayOfMessage[0] = "new device already registered: " + getError;
-                            body.result = '';
-                            res.status(202).send(body);
-                        }
-                    }
-                    lastMacAddress = element.macAddress;
-                });
-                while (lastMacAddress !== data[data.length - 1].macAddress) {
-                    console.log('waiting!');
+    Users.findOne({ login: login }, (err, docs) => { }).then((doc) => {
+        var diffDays = compareDates(doc.lastChangeDeviceDate, Date.now());
+        if (diffDays >= 30) {
+            console.log("doc login = " + doc.login);
+            Devices.findOneAndUpdate({ macAddress: oldMAC, userId: doc.login }, { macAddress: MAC, name: name, model: model, registeredDate: Date.now() }, (err, docs) => {
+                if (docs != undefined) {
+                    var body = getBody();
+                    body.arrayOfMessage[0] = "device changed";
+                    body.result = docs;
+                    res.status(202).send(body);
+                    Users.findOneAndUpdate({ login: login }, { lastChangeDeviceDate: Date.now() }, (err, docs) => { });
+                    docs.save();
+                } else {
+                    console.log("why?");
+                    var body = getBody();
+                    body.arrayOfMessage[0] = "device not found or already exist";
+                    body.result = '';
+                    res.status(500).send(body);
                 }
-                var body = getBody();
-                body.arrayOfMessage[0] = "device not found";
-                body.result = '';
-                //res.status(202).send(body);
-                console.log('ops');
-            } else {
-                Devices.find({ macAddress: oldMAC }, (err, res) => {
-                    hasOne = res[0] !== undefined;
-                    newOne = res[0];
-                }).then(() => {
-                    if (!hasOne) {
-                        device.save().then(function () {
-                            var body = getBody();
-                            body.arrayOfMessage[0] = 'SUCCESS';
-                            body.result = device;
-
-                            res.status(201).send(body);
-                        }).catch(function () {
-                            res.send(err, 500);
-                        });
-                    } else {
-                        var diffDays = compareDates(data.registeredDate, new Date());
-                        if (diffDays >= 30) {
-                            Devices.findOneAndUpdate({ macAddress: oldMAC },
-                                { macAddress: MAC, name: name, model: model, registeredDate: new Date() },
-                                (err, doc) => {
-
-                                    var body = getBody();
-                                    body.arrayOfMessage[0] = 'SUCCESS';
-                                    body.result = doc;
-
-                                    res.status(201).send(body);
-                                    doc.save();
-
-                                });
-                        } else {
-                            var body = getBody();
-                            body.arrayOfMessage[0] = "this device can't be changed";
-                            body.result = '';
-
-                            res.status(202).send(body);
-                        }
-                    }
-                });
-            }
-        })
-    })
+            }).catch(() => {
+                res.status(500).send(body);
+            });
+        } else {
+            var body = getBody();
+            body.arrayOfMessage[0] = "your limit of change devices war reached you need to wait " + (30 - diffDays) + " to change again";
+            body.result = '';
+            res.status(202).send(body);
+        }
+    });
 });
 
 router.post('/removeDevice', function (req, res) {
 
     var MAC = req.body.MAC;
-    var data = undefined;
-    Devices.find({ macAddress: MAC }, function (err, res) {
-        data = res[0];
-    }).then(() => {
-        if (data !== undefined) {
-            Devices.deleteMany({ macAddress: MAC }, (err) => {
-                var body = getBody();
-                body.arrayOfMessage[0] = "object removed";
-                body.result = doc;
+    Devices.findOne({ macAddress: MAC }, function (err, result) {
+        if (result !== null) {
+            Users.findOne({ login: result.userId }, (err, docs) => {
+            }).then((doc) => {
 
-                res.status(200).send(body);
-                //res.send("device Removed", 202);
+                var diffDays = compareDates(doc.lastChangeDeviceDate, Date.now());
+                Devices.count({ userId: doc.login },(err,ct) =>{
+                    if (diffDays >= 30 || ct > 1) {
+                        Devices.deleteMany({ macAddress: MAC }, (err) => {
+                            var body = getBody();
+                            body.arrayOfMessage[0] = "object removed";
+                            body.result = doc;
+    
+                            res.status(200).send(body);
+                            //res.send("device Removed", 202);
+                        });
+                    } else {
+                        var body = getBody();
+                        var time = new Date(Date.now() + ((30 - diffDays) * 24 * 60 * 60 * 1000));
+                        body.arrayOfMessage[0] = "you can not remove a device until date: " + time;
+                        body.result = time;
+                        res.status(202).send(body);
+                    }
+                });
             });
         } else {
             var body = getBody();
-            body.arrayOfMessage[0] = "device not found";
-            body.result = doc;
-
-            res.status(204).send(body);
+            body.arrayOfMessage[0] = "device not removed";
+            body.result = '';
+            res.status(202).send(body);
         }
     });
 });
@@ -321,6 +240,7 @@ router.get('/startProject', function (req, res) {
             name: '123',
             email: '123@teste.com.br',
             login: '123',
+            lastChangeDeviceDate: new Date("2016-05-16"),
             password: '@123'
         });
 
@@ -328,6 +248,7 @@ router.get('/startProject', function (req, res) {
             name: '456',
             email: '456@teste.com.br',
             login: '456',
+            lastChangeDeviceDate: new Date("2016-05-16"),
             password: '@456'
         });
 
@@ -335,6 +256,7 @@ router.get('/startProject', function (req, res) {
             name: '789',
             email: '789@teste.com.br',
             login: '789',
+            lastChangeDeviceDate: new Date(),
             password: '@789'
         });
     });
@@ -348,22 +270,36 @@ router.get('/addDevices', function () {
             macAddress: '90-32-4B-BF-74-85',
             name: 'CELLPHONE',
             model: 'Android',
-            registeredDate: new Date("2016-05-16")
+            registeredDate: new Date()
         }, '456');
 
         addDevice({
             macAddress: '90-32-4B-BF-74-86',
             name: 'CELLPHONE',
             model: 'Android',
-            registeredDate: new Date("2016-05-17")
+            registeredDate: new Date()
         }, '456');
 
         addDevice({
             macAddress: '90-32-4B-BF-74-87',
             name: 'CELLPHONE',
             model: 'Android',
-            registeredDate: new Date("2016-05-18")
+            registeredDate: new Date()
         }, '456');
+
+        addDevice({
+            macAddress: '90-32-4B-BF-74-90',
+            name: 'CELLPHONE',
+            model: 'iOS',
+            registeredDate: new Date()
+        }, '789');
+
+        addDevice({
+            macAddress: '90-32-4B-BF-74-91',
+            name: 'CELLPHONE',
+            model: 'iOS',
+            registeredDate: new Date()
+        }, '789');
     });
 });
 
@@ -398,6 +334,7 @@ function addUser(data) {
         name: data.name,
         email: data.email,
         login: data.login,
+        lastChangeDeviceDate: data.lastChangeDeviceDate,
         password: data.password
     });
 
