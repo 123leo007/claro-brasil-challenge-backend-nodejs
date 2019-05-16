@@ -4,7 +4,7 @@ var browserSync = require('browser-sync');
 
 var nodemon = require('gulp-nodemon');
 
-gulp.task('sync', function () {
+/*gulp.task('sync', function () {
 	sync.init({
 		open: false,
 		server: {
@@ -14,7 +14,7 @@ gulp.task('sync', function () {
 		port: 3000,
 		notify: true,
 	});
-});
+});*/
 
 gulp.task('nodemon', function (cb) {
     var started = false;

@@ -15,6 +15,9 @@ var body = {
     arrayOfMessage: []
 };
 
+
+
+
 mongo.Promise = global.Promise;
 
 mongo.connect(url + dbName);
@@ -50,6 +53,10 @@ function compareDates(date1, date2) {
 
     return diffDays;
 }
+
+router.get('/js/front.js', (req, res) => {
+    //Front.init();
+})
 
 router.post('/addDevice', function (req, res) {
 
@@ -197,13 +204,13 @@ router.post('/removeDevice', function (req, res) {
             }).then((doc) => {
 
                 var diffDays = compareDates(doc.lastChangeDeviceDate, Date.now());
-                Devices.count({ userId: doc.login },(err,ct) =>{
+                Devices.count({ userId: doc.login }, (err, ct) => {
                     if (diffDays >= 30 || ct > 1) {
                         Devices.deleteMany({ macAddress: MAC }, (err) => {
                             var body = getBody();
                             body.arrayOfMessage[0] = "object removed";
                             body.result = doc;
-    
+
                             res.status(200).send(body);
                             //res.send("device Removed", 202);
                         });
@@ -368,6 +375,8 @@ function addDevice(data, user) {
 app.use(jsonBody.json());
 
 app.use(router);
+
+//app.use('/',Front);
 
 app.use('/', proxy('http://localhost:8000'));
 

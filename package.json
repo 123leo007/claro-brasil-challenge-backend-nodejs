@@ -29,6 +29,7 @@
     "express-restful-api": "^14.1.4",
     "gulp": "^4.0.2",
     "gulp-nodemon": "^2.4.2",
+    "jquery": "^3.2.1",
     "mocha": "^6.1.4",
     "mongodb": "^1.4.40",
     "mongoose": "^5.5.7"

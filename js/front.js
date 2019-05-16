@@ -1,7 +1,14 @@
-function teste(){
-    document.getElementById('dropUsers').innerHTML='<button class="dropdown-item" type="button">Action</button>' +
-    '<button class="dropdown-item" type="button">Another action</button>' +
-    '<button class="dropdown-item" type="button">Something else here</button>';
+
+var Page = {
+
+    init: function teste() {
+
+        var template = '<button class="dropdown-item" type="button">Action</button>' +
+            '<button class="dropdown-item" type="button">Another action</button>' +
+            '<button class="dropdown-item" type="button">Something else here</button>';
+        $('dropUsers').html($(template));
+            //$(Dash__Outage.wrapper).html($(template).hide().fadeIn(1000));
+    }
 }
 
-teste();
+module.exports = Page;
