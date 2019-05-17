@@ -15,50 +15,83 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="/js/front.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="index.js"></script>
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class='row'>
-            <div class="container col-md-6">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Dropdown
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2" id="dropUsers">
-
+    <div class="container-fluid row">
+        <div class="container-fluid row col-md-6">
+            <div class='row container'>
+                <div class="container col-md-9">Simulate a logged User:</div>
+                <div class="container col-md-3">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Dropdown
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2" id="dropUsers">
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="container col-md-6">
-            </div>
-
-        </div>
-        <div class='row'>
-            <div class="container col-md-6">
-                <table id="output" class="table table-striped table-hover">
+            <div class="container col-md-12">
+                <table class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Ingredients</th>
+                            <th>Model</th>
+                            <th>MAC Address</th>
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>a</td>
-                            <td>b</td>
-                            <td>c</td>
-                        </tr>
+                    <tbody id="output">
                     </tbody>
                 </table>
+                <div id="alert" class="container col-md-12">
+                </div>
             </div>
-            <div class="container col-md-6">
+        </div>
+        <div class="container col-md-6">
+            <form action="" method="post" id="addChangeForm">
+                <legend>Add or change Device</legend>
+                <div class="container col-md-12">
+                    <div class="form-group">
+                        <input class="form-control d-none" id="login" type="text" name="login">
+                    </div>
+                    <div class="form-group">
+                        <labe>Name:</labe>
+                        <input class="form-control" id="name" type="text" name="name">
+                    </div>
+                    <div class="form-group">
+                        <labe>Model:</labe>
+                        <select class="form-control form-control-md" id="model" type="text" name="model">
+                            <option value="None">Select</option>
+                            <option value="Android">Android</option>
+                            <option value="iOS">iOS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <labe>Mac Address:</labe>
+                        <input class="form-control" id="macAddress" type="text" name="MAC">
+                    </div>
+                    <div class="form-group">
+                        <label>Select if you`ll change a device</label>
+                        <select class="form-control form-control-md" id="changeDeviceOption" type="select"
+                            name="oldMAC">
+                        </select>
+                    </div>
+                </div>
 
-            </div>
+                <button class="btn btn-secondary" type="submit" id="dropdownMenu2" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    New Device
+                </button>
+                <button class="btn btn-secondary" type="button" id="dropdownMenu2" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false" onclick="changeDevice()">
+                    Change Device
+                </button>
+            </form>
         </div>
     </div>
 </body>

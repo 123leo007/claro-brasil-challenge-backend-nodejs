@@ -54,8 +54,16 @@ function compareDates(date1, date2) {
     return diffDays;
 }
 
-router.get('/js/front.js', (req, res) => {
-    //Front.init();
+router.get('/retrieveUsers', (req, res) => {
+    Users.find({},(err,user)=>{
+        res.send(JSON.stringify(user));
+    })
+})
+
+router.get('/retrieveDevices/:userId', (req, res) => {
+    Devices.find({userId:req.params.userId},(err,devices)=>{
+        res.send(devices);
+    })
 })
 
 router.post('/addDevice', function (req, res) {
@@ -188,7 +196,7 @@ router.post('/changeDevice', function (req, res) {
             });
         } else {
             var body = getBody();
-            body.arrayOfMessage[0] = "your limit of change devices war reached you need to wait " + (30 - diffDays) + " to change again";
+            body.arrayOfMessage[0] = "your limit of change devices was reached you need to wait " + (30 - diffDays) + " days to change again";
             body.result = '';
             res.status(202).send(body);
         }
@@ -198,6 +206,7 @@ router.post('/changeDevice', function (req, res) {
 router.post('/removeDevice', function (req, res) {
 
     var MAC = req.body.MAC;
+    console.log(req.body);
     Devices.findOne({ macAddress: MAC }, function (err, result) {
         if (result !== null) {
             Users.findOne({ login: result.userId }, (err, docs) => {

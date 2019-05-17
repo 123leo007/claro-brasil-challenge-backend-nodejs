@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-var Front = require('./js/front');
 
 
 //htmlDocument = jsServer.createHTMLDocument();
@@ -27,7 +26,7 @@ app.get('/', function (req, res) {
 app.use('/', express.static('public'));
 
 app.get('/js/front.js',(req,res)=>{
-   res.send(Front.init());
+
 });
 
 app.get('/', function(req, res) {
