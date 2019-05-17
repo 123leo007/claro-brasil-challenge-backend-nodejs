@@ -81,7 +81,7 @@ function deviceRemoved(data) {
     console.log('success' + data.arrayOfMessage[0]);
 }
 
-function addDevice(macAddress) {
+function addDevice() {
     var sliced = $('#addChangeForm').serialize().split("&");
     var makeJson = '{';
     sliced.forEach(el => {
@@ -112,12 +112,11 @@ function deviceAdded(data) {
         $('#alert').html('<div class="container-fluid alert alert-warning" role="alert">' +
             data.arrayOfMessage[0] +
             '</div>');
-        setDropName(data.result.login);
     }
     console.log('success' + data.arrayOfMessage[0]);
 }
 
-function changeDevice(macAddress) {
+function changeDevice() {
     var sliced = $('#addChangeForm').serialize().split("&");
     var makeJson = '{';
     sliced.forEach(el => {
